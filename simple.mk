@@ -1,7 +1,7 @@
 UTILS=../cpp-mods
 GRAPPIX=../cpp-mods/grappix
-CXX=clang++
-CC=clang
+#CXX=clang++
+#CC=clang
 
 include $(UTILS)/config.mk
 include $(GRAPPIX)/module.mk

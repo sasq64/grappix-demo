@@ -29,7 +29,7 @@ static const string sineShaderF = R"(
 
 int main(int argc, char **argv) {
 
-	screen.open(800, 600, false);
+	screen.open(720, 576, false);
 
 	uint32_t sz = screen.height() / 8;
 	Texture sprite { sz, sz };
@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
 	// Create our ball image
 	float radius = sprite.width() / 2;
 	vec2f center { sprite.width() / 2.0f, sprite.height() / 2.0f };
-	sprite.clear();
+	sprite.clear(0x00000000);
 	sprite.circle(center, radius, 0x000020); // Outline
 	sprite.circle(center, radius*0.90, 0x0000C0); // Main ball
 	sprite.circle(center + vec2f{radius*0.15f, -radius*0.15f}, radius * 0.6, 0x0040FF); // Hilight
@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
 			sinepos -= 2*M_PI;
 		if(xpos < -3600)
 			xpos = screen.width() + 200;
-		scr.clear();
+		scr.clear(0x00000000);
 		scr.text(font, "BALLS ON THE SCREEN!!", xpos-=4, -40, 0xe080c0ff, 15.0);
 		program.use();
 		program.setUniform("sinepos", sinepos += (0.00373 * delta));
