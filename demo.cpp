@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
 		player.getSamples(target, len);
 	});
 
-	Font font = Font("data/ObelixPro.ttf", 24, Font::UPPER_CASE);
+	Font font = Font("data/ObelixPro.ttf", 24, Font::UPPER_CASE | Font::DISTANCE_MAP);
 
 	// Create our ball image
 	float radius = sprite.width() / 2;

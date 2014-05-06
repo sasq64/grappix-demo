@@ -5,7 +5,7 @@ CPP_MODS=../cpp-mods
 include $(CPP_MODS)/config.mk
 
 OBJDIR := obj/
-TARGET := snake
+TARGET := demo
 CFLAGS += -Wall -g -O2 -DMUSIC
 
 include $(CPP_MODS)/musicplayer/plugins/ModPlugin/module.mk
@@ -20,7 +20,7 @@ DATA_FILES += data/ObelixPro.ttf data/stardust.mod
 
 ANDROID_PROJECT := android
 
-LOCAL_FILES := snake.cpp MusicPlayer.cpp
+LOCAL_FILES := demo.cpp MusicPlayer.cpp
 
 CFLAGS += -DMODPLUG_BASIC_SUPPORT
 
