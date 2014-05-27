@@ -12,9 +12,11 @@ include $(CPP_MODS)/musicplayer/plugins/ModPlugin/module.mk
 include $(CPP_MODS)/coreutils/module.mk
 include $(CPP_MODS)/audioplayer/module.mk
 include $(CPP_MODS)/grappix/module.mk
+include $(CPP_MODS)/fft/module.mk
 
 #CC = clang
 #CXX = clang++
+#LIBS += -lrfftw -lfftw
 
 DATA_FILES += data/ObelixPro.ttf data/stardust.mod
 

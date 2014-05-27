@@ -2,6 +2,10 @@
 #include <ModPlugin/ModPlugin.h>
 #include <audioplayer/audioplayer.h>
 #include <grappix/grappix.h>
+#include <mutex>
+#include <deque>
+#include <vector>
+#include <fft/spectrum.h>
 
 using namespace grappix;
 using namespace utils;
@@ -27,21 +31,30 @@ static const string sineShaderF = R"(
 	}
 )";
 
+const int eq_slots = 24;
+static vector<uint8_t> eq(eq_slots);
+
+static SpectrumAnalyzer fft;
+
 int main(int argc, char **argv) {
 
 	screen.open(720, 576, false);
 
+	
+	
 	uint32_t sz = screen.height() / 8;
 	Texture sprite { sz, sz };
 	vec2f xy {0,0};
 	int xpos = -9999;
-	Texture scr {screen.width()+200, 400};
+	Texture scr {screen.width()+200, 440};
 	Program program;
 	float sinepos = 0;
 
-	auto player = MusicPlayer::fromFile("data/stardust.mod");
+	memset(&eq[0], 2, eq_slots);
+	auto player = MusicPlayer::fromFile("data/piano.mod");
 	AudioPlayer aPlayer([=](int16_t *target, int len) mutable {
 		player.getSamples(target, len);
+		fft.addAudio(target, len);
 	});
 
 	Font font = Font("data/ObelixPro.ttf", 24, Font::UPPER_CASE | Font::DISTANCE_MAP);
@@ -56,6 +69,8 @@ int main(int argc, char **argv) {
 
 	program = get_program(TEXTURED_PROGRAM).clone();
 	program.setFragmentSource(sineShaderF);
+
+	memset(&eq[0], 0, eq_slots);
 
 	screen.render_loop([=](uint32_t delta) mutable {
 		int count = sz*2;
@@ -77,10 +92,33 @@ int main(int argc, char **argv) {
 		if(xpos < -3600)
 			xpos = screen.width() + 200;
 		scr.clear(0x00000000);
-		scr.text(font, "BALLS ON THE SCREEN!!", xpos-=4, -40, 0xe080c0ff, 15.0);
+		scr.text(font, "BALLS ON THE SCREEN!!", xpos-=4, 10, 0xe080c0ff, 15.0);
 		program.use();
 		program.setUniform("sinepos", sinepos += (0.00373 * delta));
 		screen.draw(scr, 0.0f, 0.0f, screen.width(), screen.height(), uvs, program);
+
+
+		if(fft.size() > 20) {
+			auto levels = fft.getLevels();
+			for(int i=0; i<levels.size(); i++) {
+				if(levels[i] > 5) {
+					float f = log(levels[i]) * 20;
+					if(f > eq[i])
+						eq[i] = f;
+				}
+			}
+
+			fft.popLevels();
+		}
+
+		for(int i=0; i<eq_slots; i++) {
+			screen.rectangle(25 + 13*i, 300-eq[i], 12, eq[i], 0xffffffff);
+			if(eq[i] >= 4)
+				eq[i]-=2;
+			else
+				eq[i] = 2;
+		}
+	
 		screen.flip();
 	});
 
